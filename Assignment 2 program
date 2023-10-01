@@ -1,0 +1,42 @@
+def matrix_chain_multiplication(matrices):
+    n = len(matrices)
+    
+    # Initialize the dp table
+    dp = [[float('inf')] * n for _ in range(n)]
+
+    # Fill the main diagonal with zeros since there is no cost for multiplying a matrix by itself
+    for i in range(n):
+        dp[i][i] = 0
+
+    # Build up the dp table
+    for chain_length in range(2, n + 1):
+        for i in range(n - chain_length + 1):
+            j = i + chain_length - 1
+            for k in range(i, j):
+                cost = dp[i][k] + dp[k+1][j] + matrices[i][0] * matrices[k][1] * matrices[j][1]
+                dp[i][j] = min(dp[i][j], cost)
+
+    # Reconstruct the optimal parenthesization
+    parenthesization = reconstruct_parenthesization(dp, matrices, 0, n - 1)
+
+    return parenthesization, dp[0][n-1]
+
+def reconstruct_parenthesization(dp, matrices, i, j):
+    if i == j:
+        return f'M{str(i+1)}'
+    
+    for k in range(i, j):
+        if dp[i][j] == dp[i][k] + dp[k+1][j] + matrices[i][0] * matrices[k][1] * matrices[j][1]:
+            left_paren = reconstruct_parenthesization(dp, matrices, i, k)
+            right_paren = reconstruct_parenthesization(dp, matrices, k+1, j)
+            return f'({left_paren} x {right_paren})'
+
+# Example Input
+matrices = [(2, 3), (3, 4), (4, 2)]
+
+# Apply the algorithm
+parenthesization, min_scalar_multiplications = matrix_chain_multiplication(matrices)
+
+# Output
+print("Optimal Parenthesization:", parenthesization)
+print("Minimum Scalar Multiplications:", min_scalar_multiplications)
