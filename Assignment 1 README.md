@@ -1,2 +1,2 @@
 # ADSA
-This is my project using sorting algorithms
+This is my assignment using sorting algorithms
